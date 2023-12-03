@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diffie-Hellman Key Exchange</title>
+  <script>
+    // Diffie-Hellman parameters
+    const p = BigInt('23'); // Prime number
+    const g = BigInt('5');  // Generator
+
+    // Alice's private key
+    let privateAlice;
+    // Bob's private key
+    let privateBob;
+
+    // Calculate public keys
+    let publicAlice;
+    let publicBob;
+
+    // Calculate shared secret
+    let secretAlice;
+    let secretBob;
+
+    // Display results
+    function displayResults() {
+      document.getElementById('result').innerHTML = `
+        <p>Alice's private key: ${privateAlice}</p>
+        <p>Bob's private key: ${privateBob}</p>
+        <p>Alice's public key: ${publicAlice}</p>
+        <p>Bob's public key: ${publicBob}</p>
+        <p>Shared secret (Alice): ${secretAlice}</p>
+        <p>Shared secret (Bob): ${secretBob}</p>
+      `;
+    }
+
+    function generateKeys() {
+      // Generate new private keys
+      privateAlice = generatePrivateKey();
+      privateBob = generatePrivateKey();
+
+      // Calculate new public keys
+      publicAlice = calculatePublicKey(g, privateAlice, p);
+      publicBob = calculatePublicKey(g, privateBob, p);
+
+      // Calculate new shared secrets
+      secretAlice = calculateSharedSecret(publicBob, privateAlice, p);
+      secretBob = calculateSharedSecret(publicAlice, privateBob, p);
+
+      // Display results
+      displayResults();
+    }
+
+    function generatePrivateKey() {
+      return BigInt(Math.floor(Math.random() * 100) + 1);
+    }
+
+    function calculatePublicKey(g, private_key, p) {
+      return modPow(g, private_key, p);
+    }
+
+    function calculateSharedSecret(public_key, private_key, p) {
+      return modPow(public_key, private_key, p);
+    }
+
+    function modPow(base, exponent, modulus) {
+      if (modulus === 1n) return 0n;
+      let result = 1n;
+      base = base % modulus;
+      while (exponent > 0n) {
+        if (exponent % 2n === 1n) {
+          result = (result * base) % modulus;
+        }
+        exponent = exponent >> 1n;
+        base = (base * base) % modulus;
+      }
+      return result;
+    }
+  </script>
+</head>
+<body>
+  <h1>Diffie-Hellman Key Exchange</h1>
+  <button onclick="generateKeys()">Generate Keys</button>
+  <div id="result"></div>
+</body>
+</html>
+
